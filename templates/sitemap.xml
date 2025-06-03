@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>{{ request.scheme }}://{{ request.get_host }}/</loc>
+        <xhtml:link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}{% url 'set_language' %}?language=en"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="{{ request.scheme }}://{{ request.get_host }}{% url 'set_language' %}?language=fr"/>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>{{ request.scheme }}://{{ request.get_host }}{% url 'sign_in' %}</loc>
+        <xhtml:link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}{% url 'sign_in' %}?language=en"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="{{ request.scheme }}://{{ request.get_host }}{% url 'sign_in' %}?language=fr"/>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+</urlset>

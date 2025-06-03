@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PocketPass - All your travel tickets, one tap away</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sunset: #FFB967;
+            --sand: #FFECD1;
+            --ocean: #01324C;
+            --ocean-light: #005D8D;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: white;
+            background-image: radial-gradient(var(--sand) 1px, transparent 1px);
+            background-size: 40px 40px;
+            scroll-behavior: smooth;
+        }
+        
+        .dotted-map {
+            background-image: radial-gradient(var(--sand) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.3;
+        }
+        
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
+            color: var(--ocean);
+        }
+        
+        .testimonial-slide {
+            transition: transform 0.5s ease;
+        }
+        
+        .nav-scrolled {
+            @apply shadow-md bg-white/90 backdrop-blur-sm;
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .phone-mockup {
+            perspective: 1500px;
+        }
+        
+        .phone-mockup img {
+            transform: rotateY(-15deg);
+            box-shadow: 20px 20px 40px rgba(0, 0, 0, 0.1);
+            transition: transform 0.5s ease;
+        }
+        
+        .phone-mockup:hover img {
+            transform: rotateY(-5deg);
+        }
+        
+        .step-connector {
+            position: relative;
+        }
+        
+        .step-connector:not(:last-child):after {
+            content: '';
+            @apply absolute top-0 left-1/2 w-0.5 h-full bg-[var(--sand)];
+            transform: translateX(-50%);
+        }
+        
+        @media (max-width: 768px) {
+            .step-connector:not(:last-child):after {
+                @apply left-0 top-1/2 w-full h-0.5;
+                transform: translateY(-50%);
+            }
+        }
+    </style>
+</head>
+<body class="text-[#333]">
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-[var(--sunset)] flex items-center justify-center text-white font-bold text-xl mr-3">PP</div>
+                <span class="text-xl font-bold text-[var(--ocean)]">PocketPass</span>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#features" class="hover:text-[var(--sunset)] transition">Features</a>
+                <a href="#how-it-works" class="hover:text-[var(--sunset)] transition">How it works</a>
+                <a href="#testimonials" class="hover:text-[var(--sunset)] transition">Testimonials</a>
+            </div>
+            <button class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition md:block hidden">
+                Join the beta
+            </button>
+            <button id="mobile-menu-button" class="md:hidden text-[var(--ocean)]">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white w-full absolute left-0 top-full shadow-lg">
+            <div class="container mx-auto px-6 py-4 flex flex-col space-y-4">
+                <a href="#features" class="hover:text-[var(--sunset)] transition">Features</a>
+                <a href="#how-it-works" class="hover:text-[var(--sunset)] transition">How it works</a>
+                <a href="#testimonials" class="hover:text-[var(--sunset)] transition">Testimonials</a>
+                <button class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition w-full mt-4">
+                    Join the beta
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-6">
+        <div class="container mx-auto flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-12 md:mb-0 fade-in">
+                <h1 class="text-4xl md:text-5xl font-bold text-[var(--ocean)] mb-6 leading-tight">
+                    All your travel tickets, one tap away.
+                </h1>
+                <p class="text-lg text-gray-600 mb-8 max-w-lg">
+                    Stop digging through emails. PocketPass gathers every QR-code and booking for you—online and offline.
+                </p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <button class="bg-[var(--sunset)] text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition font-medium">
+                        Join the beta
+                    </button>
+                    <button class="border-2 border-[var(--ocean)] text-[var(--ocean)] px-8 py-3 rounded-full hover:bg-[var(--sand)] transition font-medium">
+                        Watch demo
+                    </button>
+                </div>
+                <div class="mt-8 flex space-x-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                    </div>
+                    <span class="text-gray-600">4.9/5 from 2,000+ travelers</span>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center phone-mockup fade-in">
+                <img src="https://cdn.dribbble.com/users/1787323/screenshots/11310885/media/5e4f4a9e6d1a7d0e2a5b3e5e5b5e5b5e.png" 
+                     alt="PocketPass app mockup" 
+                     class="w-80 rounded-3xl border-8 border-white">
+            </div>
+        </div>
+    </section>
+
+    <!-- Pain vs Solution -->
+    <section class="py-20 bg-[var(--sand)] bg-opacity-30 px-6">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center text-[var(--ocean)] mb-16 fade-in">
+                From chaos to peace of mind
+            </h2>
+            <div class="flex flex-col md:flex-row items-center fade-in">
+                <div class="md:w-1/2 mb-10 md:mb-0 md:pr-10">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-times text-red-500"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold">The travel ticket nightmare</h3>
+                        </div>
+                        <img src="https://cdn.dribbble.com/users/1787323/screenshots/11310885/media/5e4f4a9e6d1a7d0e2a5b3e5e5b5e5b5e.png" 
+                             alt="Chaotic inbox" 
+                             class="w-full rounded-lg border border-gray-200">
+                        <p class="mt-4 text-gray-600">
+                            Lost in endless email threads, missed bookings, and last-minute scrambles to find QR codes.
+                        </p>
+                    </div>
+                </div>
+                <div class="md:w-1/2 md:pl-10">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-check text-green-500"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold">PocketPass simplicity</h3>
+                        </div>
+                        <img src="https://cdn.dribbble.com/users/1787323/screenshots/11310885/media/5e4f4a9e6d1a7d0e2a5b3e5e5b5e5b5e.png" 
+                             alt="Organized PocketPass timeline" 
+                             class="w-full rounded-lg border border-gray-200">
+                        <p class="mt-4 text-gray-600">
+                            Everything in one place, sorted chronologically, accessible offline, with smart reminders.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="py-20 px-6">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center text-[var(--ocean)] mb-4 fade-in">
+                Travel smarter, not harder
+            </h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-16 fade-in">
+                PocketPass takes the stress out of travel organization so you can focus on the experience.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="feature-card bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer fade-in">
+                    <div class="w-14 h-14 rounded-full bg-[var(--sand)] flex items-center justify-center mb-6">
+                        <i class="feature-icon fas fa-envelope text-2xl text-[var(--sunset)] transition"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Auto-import from Gmail/Outlook</h3>
+                    <p class="text-gray-600">
+                        Connect your email and we'll automatically find and organize all your travel confirmations.
+                    </p>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="feature-card bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer fade-in">
+                    <div class="w-14 h-14 rounded-full bg-[var(--sand)] flex items-center justify-center mb-6">
+                        <i class="feature-icon fas fa-calendar-alt text-2xl text-[var(--sunset)] transition"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Smart timeline & reminders</h3>
+                    <p class="text-gray-600">
+                        See your entire trip in chronological order with smart reminders for check-ins and departures.
+                    </p>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div class="feature-card bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer fade-in">
+                    <div class="w-14 h-14 rounded-full bg-[var(--sand)] flex items-center justify-center mb-6">
+                        <i class="feature-icon fas fa-wifi-slash text-2xl text-[var(--sunset)] transition"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Offline access to QR-codes</h3>
+                    <p class="text-gray-600">
+                        No internet? No problem. All your tickets and QR codes are available offline when you need them.
+                    </p>
+                </div>
+                
+                <!-- Feature 4 -->
+                <div class="feature-card bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer fade-in">
+                    <div class="w-14 h-14 rounded-full bg-[var(--sand)] flex items-center justify-center mb-6">
+                        <i class="feature-icon fas fa-user-friends text-2xl text-[var(--sunset)] transition"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Couple & group sharing</h3>
+                    <p class="text-gray-600">
+                        Share your travel plans with travel companions so everyone stays on the same page.
+                    </p>
+                </div>
+                
+                <!-- Feature 5 -->
+                <div class="feature-card bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer fade-in">
+                    <div class="w-14 h-14 rounded-full bg-[var(--sand)] flex items-center justify-center mb-6">
+                        <i class="feature-icon fas fa-lock text-2xl text-[var(--sunset)] transition"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Privacy-first on-device AI</h3>
+                    <p class="text-gray-600">
+                        Powered by Phi-3 Mini AI that runs on your device—your data never leaves your phone.
+                    </p>
+                </div>
+                
+                <!-- Feature 6 -->
+                <div class="feature-card bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer fade-in">
+                    <div class="w-14 h-14 rounded-full bg-[var(--sand)] flex items-center justify-center mb-6">
+                        <i class="feature-icon fas fa-tag text-2xl text-[var(--sunset)] transition"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Free forever for up to 3 trips</h3>
+                    <p class="text-gray-600">
+                        Premium unlocks unlimited trips for just €2.99/month with additional features.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section id="how-it-works" class="py-20 bg-[var(--sand)] bg-opacity-30 px-6">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center text-[var(--ocean)] mb-4 fade-in">
+                How PocketPass works
+            </h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-16 fade-in">
+                Getting started takes just 3 simple steps
+            </p>
+            
+            <div class="flex flex-col md:flex-row justify-between">
+                <!-- Step 1 -->
+                <div class="md:w-1/3 px-6 mb-12 md:mb-0 step-connector fade-in">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-16 h-16 rounded-full bg-[var(--ocean)] text-white flex items-center justify-center text-2xl font-bold mb-6">
+                            1
+                        </div>
+                        <div class="w-20 h-20 rounded-full bg-[var(--sand)] flex items-center justify-center mb-6">
+                            <i class="fas fa-envelope text-3xl text-[var(--sunset)]"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Connect your email</h3>
+                        <p class="text-gray-600">
+                            Securely link your Gmail, Outlook, or other email accounts with read-only access.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="md:w-1/3 px-6 mb-12 md:mb-0 step-connector fade-in">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-16 h-16 rounded-full bg-[var(--ocean)] text-white flex items-center justify-center text-2xl font-bold mb-6">
+                            2
+                        </div>
+                        <div class="w-20 h-20 rounded-full bg-[var(--sand)] flex items-center justify-center mb-6">
+                            <i class="fas fa-robot text-3xl text-[var(--sunset)]"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Let our AI sort your bookings</h3>
+                        <p class="text-gray-600">
+                            Our privacy-first AI identifies travel confirmations and organizes them automatically.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="md:w-1/3 px-6 step-connector fade-in">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-16 h-16 rounded-full bg-[var(--ocean)] text-white flex items-center justify-center text-2xl font-bold mb-6">
+                            3
+                        </div>
+                        <div class="w-20 h-20 rounded-full bg-[var(--sand)] flex items-center justify-center mb-6">
+                            <i class="fas fa-umbrella-beach text-3xl text-[var(--sunset)]"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Enjoy stress-free travel</h3>
+                        <p class="text-gray-600">
+                            Access all your tickets in one place, with smart reminders and offline access.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="py-20 px-6">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center text-[var(--ocean)] mb-4 fade-in">
+                Loved by travelers worldwide
+            </h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-16 fade-in">
+                Don't just take our word for it—here's what our users say
+            </p>
+            
+            <div class="relative max-w-4xl mx-auto overflow-hidden fade-in">
+                <div id="testimonial-slider" class="flex transition-transform duration-500">
+                    <!-- Testimonial 1 -->
+                    <div class="testimonial-slide min-w-full px-4">
+                        <div class="bg-white p-8 rounded-xl shadow-sm">
+                            <div class="flex items-center mb-6">
+                                <img src="https://randomuser.me/api/portraits/women/44.jpg" 
+                                     alt="Sarah K." 
+                                     class="w-16 h-16 rounded-full border-4 border-[var(--sand)]">
+                                <div class="ml-4">
+                                    <h4 class="font-semibold">Sarah K.</h4>
+                                    <div class="flex items-center mt-1">
+                                        <img src="https://flagcdn.com/w20/us.png" alt="USA" class="w-5 h-3 mr-2">
+                                        <span class="text-gray-500 text-sm">New York, USA</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 italic">
+                                "I used to waste so much time searching for confirmation emails at airports. PocketPass has saved me from missing flights multiple times already!"
+                            </p>
+                            <div class="mt-4 flex">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 2 -->
+                    <div class="testimonial-slide min-w-full px-4">
+                        <div class="bg-white p-8 rounded-xl shadow-sm">
+                            <div class="flex items-center mb-6">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" 
+                                     alt="Thomas L." 
+                                     class="w-16 h-16 rounded-full border-4 border-[var(--sand)]">
+                                <div class="ml-4">
+                                    <h4 class="font-semibold">Thomas L.</h4>
+                                    <div class="flex items-center mt-1">
+                                        <img src="https://flagcdn.com/w20/fr.png" alt="France" class="w-5 h-3 mr-2">
+                                        <span class="text-gray-500 text-sm">Paris, France</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 italic">
+                                "As someone who travels weekly for work, PocketPass has become my essential travel companion. The offline access is a game-changer!"
+                            </p>
+                            <div class="mt-4 flex">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 3 -->
+                    <div class="testimonial-slide min-w-full px-4">
+                        <div class="bg-white p-8 rounded-xl shadow-sm">
+                            <div class="flex items-center mb-6">
+                                <img src="https://randomuser.me/api/portraits/women/68.jpg" 
+                                     alt="Aisha M." 
+                                     class="w-16 h-16 rounded-full border-4 border-[var(--sand)]">
+                                <div class="ml-4">
+                                    <h4 class="font-semibold">Aisha M.</h4>
+                                    <div class="flex items-center mt-1">
+                                        <img src="https://flagcdn.com/w20/ae.png" alt="UAE" class="w-5 h-3 mr-2">
+                                        <span class="text-gray-500 text-sm">Dubai, UAE</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 italic">
+                                "Planning our family vacation was so much easier with PocketPass. Being able to share all tickets with my husband made everything smoother."
+                            </p>
+                            <div class="mt-4 flex">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <i class="fas fa-star-half-alt text-yellow-400 mr-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center mt-8 space-x-2">
+                    <button id="testimonial-prev" class="w-10 h-10 rounded-full bg-[var(--sand)] flex items-center justify-center text-[var(--ocean)] hover:bg-[var(--sunset)] hover:text-white transition">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button id="testimonial-next" class="w-10 h-10 rounded-full bg-[var(--sand)] flex items-center justify-center text-[var(--ocean)] hover:bg-[var(--sunset)] hover:text-white transition">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Banner -->
+    <section class="py-20 px-6 bg-gradient-to-r from-[var(--ocean)] to-[var(--ocean-light)]">
+        <div class="container mx-auto text-center fade-in">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
+                Ready for your most organised trip yet?
+            </h2>
+            <p class="text-white text-opacity-90 max-w-2xl mx-auto mb-8">
+                Join thousands of travelers who've made PocketPass their essential travel companion.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <button class="bg-white text-[var(--ocean)] px-8 py-3 rounded-full hover:bg-opacity-90 transition font-medium">
+                    Get Early Access
+                </button>
+                <button class="border-2 border-white text-white px-8 py-3 rounded-full hover:bg-white hover:bg-opacity-10 transition font-medium">
+                    Watch Demo Video
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 bg-[var(--sand)] bg-opacity-30">
+        <div class="container mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+                <div class="flex items-center mb-6 md:mb-0">
+                    <div class="w-10 h-10 rounded-full bg-[var(--sunset)] flex items-center justify-center text-white font-bold text-xl mr-3">PP</div>
+                    <span class="text-xl font-bold text-[var(--ocean)]">PocketPass</span>
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-6 mb-6 md:mb-0">
+                    <a href="#" class="text-gray-600 hover:text-[var(--ocean)] transition">Privacy</a>
+                    <a href="#" class="text-gray-600 hover:text-[var(--ocean)] transition">Terms</a>
+                    <a href="#" class="text-gray-600 hover:text-[var(--ocean)] transition">Contact</a>
+                    <a href="#" class="text-gray-600 hover:text-[var(--ocean)] transition">FAQ</a>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <a href="#" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[var(--ocean)] hover:bg-[var(--sunset)] hover:text-white transition">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[var(--ocean)] hover:bg-[var(--sunset)] hover:text-white transition">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[var(--ocean)] hover:bg-[var(--sunset)] hover:text-white transition">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="pt-6 border-t border-gray-200 text-center text-gray-500">
+                <p>Built with ❤️ in France — © PocketPass 2025</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                navbar.classList.add('nav-scrolled');
+            } else {
+                navbar.classList.remove('nav-scrolled');
+            }
+        });
+        
+        // Testimonial slider
+        const slider = document.getElementById('testimonial-slider');
+        const prevButton = document.getElementById('testimonial-prev');
+        const nextButton = document.getElementById('testimonial-next');
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.testimonial-slide');
+        const totalSlides = slides.length;
+        
+        function updateSlider() {
+            slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+        
+        nextButton.addEventListener('click', () => {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSlider();
+        });
+        
+        prevButton.addEventListener('click', () => {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateSlider();
+        });
+        
+        // Intersection Observer for fade-in animations
+        const fadeElements = document.querySelectorAll('.fade-in');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+        
+        fadeElements.forEach(element => {
+            element.style.opacity = 0;
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(element);
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
