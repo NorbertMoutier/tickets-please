@@ -1,0 +1,61 @@
+/* Main CSS file for PocketPass */
+
+/* Global styles */
+:root {
+    --sunset: #FFB967;
+    --sand: #FFECD1;
+    --ocean: #01324C;
+    --ocean-light: #005D8D;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: white;
+    scroll-behavior: smooth;
+}
+
+/* Sign-in page specific styles */
+.form-input {
+    appearance: none;
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    font-size: 0.875rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--sunset);
+    box-shadow: 0 0 0 3px rgba(255, 185, 103, 0.2);
+}
+
+.btn-primary {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    color: white;
+    background-color: var(--ocean);
+    border: 1px solid transparent;
+    border-radius: 9999px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: background-color 0.15s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: var(--ocean-light);
+}
+
+.link {
+    color: var(--sunset);
+    font-weight: 500;
+    transition: color 0.15s ease-in-out;
+}
+
+.link:hover {
+    color: var(--ocean);
+}

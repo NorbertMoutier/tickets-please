@@ -27,6 +27,30 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:58505']
+
+# Configuration des logs
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'allauth': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
 
 # Application definition
 
@@ -46,7 +70,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -94,9 +117,16 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'OPTIONS': {
+            'user_attributes': ('email', 'first_name', 'last_name'),
+            'max_similarity': 0.7,
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 10,
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -104,6 +134,14 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+]
+
+# Utiliser Argon2 comme algorithme de hachage principal (plus sécurisé que PBKDF2)
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
 ]
 
 
@@ -142,9 +180,30 @@ AUTHENTICATION_BACKENDS = [
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+# Django-allauth settings
+# ACCOUNT_EMAIL_REQUIRED = True # Remplacé par ACCOUNT_SIGNUP_FIELDS
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+# ACCOUNT_USERNAME_REQUIRED = False # Remplacé par ACCOUNT_SIGNUP_FIELDS
+ACCOUNT_LOGIN_METHODS = ['email']
+ACCOUNT_EMAIL_VERIFICATION = 'none'  # Temporairement désactivé pour le test
+# ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5 # Remplacé par ACCOUNT_RATE_LIMITS  # Limiter les tentatives de connexion
+ACCOUNT_RATE_LIMITS = {'login_failed': '5/5m'} # 5 tentatives / 5 minutes
+# ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300 # Remplacé par ACCOUNT_RATE_LIMITS  # Temps d'attente après trop de tentatives (en secondes)
+ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True  # Déconnecter après changement de mot de passe
+ACCOUNT_PASSWORD_MIN_LENGTH = 10  # Longueur minimale du mot de passe
+ACCOUNT_UNIQUE_EMAIL = True  # Email unique
+ACCOUNT_SESSION_REMEMBER = None  # Demander à l'utilisateur s'il veut rester connecté
+
+# Sécurité des sessions et cookies
+SESSION_COOKIE_SECURE = True  # Cookies de session uniquement via HTTPS
+CSRF_COOKIE_SECURE = True  # Cookies CSRF uniquement via HTTPS
+SESSION_COOKIE_HTTPONLY = True  # Empêcher l'accès JavaScript aux cookies de session
+CSRF_COOKIE_HTTPONLY = True  # Empêcher l'accès JavaScript aux cookies CSRF
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Sessions persistantes
+SESSION_COOKIE_AGE = 1209600  # 2 semaines (en secondes)
+SECURE_BROWSER_XSS_FILTER = True  # Activer le filtre XSS des navigateurs
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Empêcher le reniflage MIME
 
 # Google OAuth2 settings
 SOCIALACCOUNT_PROVIDERS = {
@@ -155,6 +214,36 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
         'AUTH_PARAMS': {
             'access_type': 'online',
-        }
+        },
+        # Suppression de la configuration APP pour éviter les conflits avec la base de données
+        # L'application est maintenant configurée uniquement dans la base de données
+        'VERIFIED_EMAIL': True,
+        'FETCH_USERINFO': True,
     }
 }
+
+# Paramètres généraux pour les comptes sociaux
+SOCIALACCOUNT_ADAPTER = 'allauth.socialaccount.adapter.DefaultSocialAccountAdapter'
+SOCIALACCOUNT_AUTO_SIGNUP = True  # Inscription automatique
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'  # Pas besoin de vérification pour les comptes sociaux
+SOCIALACCOUNT_EMAIL_REQUIRED = True  # Email requis
+SOCIALACCOUNT_STORE_TOKENS = True  # Stocker les tokens pour réutilisation
+
+# Paramètres pour la scalabilité
+CONN_MAX_AGE = 60  # Persistance des connexions DB pour améliorer les performances
+
+# Paramètres de cache pour améliorer les performances
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
+# Pour la production, décommenter et configurer ces paramètres
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.example.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your-email@example.com'
+# EMAIL_HOST_PASSWORD = 'your-password'

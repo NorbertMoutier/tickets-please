@@ -64,9 +64,9 @@
                 <a href="#testimonials" class="hover:text-[var(--sunset)] transition">Testimonials</a>
             </div>
 
-            <button class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition md:block hidden">
+            <a href="{% url 'sign_in' %}" class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition md:block hidden inline-flex items-center justify-center">
                 Sign in
-            </button>
+            </a>
             <button id="mobile-menu-button" class="md:hidden text-[var(--ocean)]">
                 <i class="fas fa-bars text-2xl"></i>
             </button>
@@ -77,9 +77,9 @@
                 <a href="#features" class="hover:text-[var(--sunset)] transition">Features</a>
                 <a href="#how-it-works" class="hover:text-[var(--sunset)] transition">How it works</a>
                 <a href="#testimonials" class="hover:text-[var(--sunset)] transition">Testimonials</a>
-                <button class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition w-full mt-4">
-                    Join the beta
-                </button>
+                <a href="{% url 'sign_in' %}" class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition w-full mt-4 inline-flex items-center justify-center">
+                    Sign in
+                </a>
             </div>
         </div>
     </nav>
