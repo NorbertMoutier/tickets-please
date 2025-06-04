@@ -19,11 +19,14 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static
+from accounts.views import GoogleAuthPopupView, AccountView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='ticketsplease.html'), name='home'),
     path('accounts/', include('allauth.urls')),
     path('sign-in/', TemplateView.as_view(template_name='sign_in.html'), name='sign_in'),
+    path('google-auth-popup/', GoogleAuthPopupView.as_view(), name='google_auth_popup'),
+    path('account/', AccountView.as_view(), name='account'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

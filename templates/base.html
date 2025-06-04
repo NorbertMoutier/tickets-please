@@ -28,7 +28,72 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body>
+    <!-- Header avec navigation -->  
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="{% url 'home' %}" class="text-[var(--ocean)] font-bold text-xl flex items-center">
+                <i class="fas fa-ticket-alt mr-2 text-[var(--sunset)]"></i>TicketsPlease
+            </a>
+
+            <nav class="flex items-center space-x-4">
+                <a href="#" class="text-gray-700 hover:text-[var(--ocean)] transition-colors">Tickets</a>
+                <a href="#" class="text-gray-700 hover:text-[var(--ocean)] transition-colors">Destinations</a>
+                
+                {% if user.is_authenticated %}
+                    <div class="relative" id="accountDropdown">
+                        <button class="flex items-center bg-[var(--ocean)] text-white py-2 px-4 rounded-lg hover:bg-[var(--ocean-light)] transition-colors">
+                            <i class="fas fa-user-circle mr-2"></i>
+                            <span>{{ user.email|truncatechars:15 }}</span>
+                            <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                        </button>
+                        
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10 hidden" id="accountMenu">
+                            <a href="{% url 'account' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-id-card mr-2 text-[var(--ocean)]"></i>Mon compte
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-ticket-alt mr-2 text-[var(--sunset)]"></i>Mes tickets
+                            </a>
+                            <div class="border-t border-gray-200 my-1"></div>
+                            <a href="{% url 'account_logout' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-sign-out-alt mr-2 text-red-500"></i>Déconnexion
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'sign_in' %}" class="text-[var(--ocean)] hover:text-[var(--ocean-light)] transition-colors">
+                        <i class="fas fa-sign-in-alt mr-1"></i>Connexion
+                    </a>
+                    <a href="{% url 'account_signup' %}" class="bg-[var(--ocean)] text-white py-2 px-4 rounded-lg hover:bg-[var(--ocean-light)] transition-colors">
+                        Créer un compte
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+    
     {% block content %}{% endblock %}
     {% block extra_body %}{% endblock %}
+    
+    <script>
+        // Dropdown menu pour le compte utilisateur
+        document.addEventListener('DOMContentLoaded', function() {
+            const accountDropdown = document.getElementById('accountDropdown');
+            const accountMenu = document.getElementById('accountMenu');
+            
+            if (accountDropdown && accountMenu) {
+                accountDropdown.addEventListener('click', function(e) {
+                    accountMenu.classList.toggle('hidden');
+                });
+                
+                // Fermer le menu si on clique ailleurs
+                document.addEventListener('click', function(e) {
+                    if (!accountDropdown.contains(e.target)) {
+                        accountMenu.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

@@ -50,7 +50,9 @@
     </style>
     <link rel="stylesheet" href="{% static 'css/ticketsplease_style.css' %}">
 </head>
-<body class="text-[#333]">
+<body class="text-[#333] relative overflow-x-hidden">
+    <!-- Canvas pour l'animation d'avion -->
+    <canvas id="planeCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-10"></canvas>
     <!-- Navigation -->
     <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4">
         <div class="container mx-auto px-6 flex justify-between items-center">
@@ -64,9 +66,15 @@
                 <a href="#testimonials" class="hover:text-[var(--sunset)] transition">Testimonials</a>
             </div>
 
+            {% if user.is_authenticated %}
+            <a href="{% url 'account' %}" class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition md:block hidden inline-flex items-center justify-center">
+                <i class="fas fa-user-circle mr-2"></i>Mon compte
+            </a>
+            {% else %}
             <a href="{% url 'sign_in' %}" class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition md:block hidden inline-flex items-center justify-center">
                 Sign in
             </a>
+            {% endif %}
             <button id="mobile-menu-button" class="md:hidden text-[var(--ocean)]">
                 <i class="fas fa-bars text-2xl"></i>
             </button>
@@ -77,9 +85,19 @@
                 <a href="#features" class="hover:text-[var(--sunset)] transition">Features</a>
                 <a href="#how-it-works" class="hover:text-[var(--sunset)] transition">How it works</a>
                 <a href="#testimonials" class="hover:text-[var(--sunset)] transition">Testimonials</a>
+                
+                {% if user.is_authenticated %}
+                <a href="{% url 'account' %}" class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition w-full mt-4 inline-flex items-center justify-center">
+                    <i class="fas fa-user-circle mr-2"></i>Mon compte
+                </a>
+                <a href="{% url 'account_logout' %}" class="border border-red-500 text-red-500 px-6 py-2 rounded-full hover:bg-red-50 transition w-full mt-2 inline-flex items-center justify-center">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                </a>
+                {% else %}
                 <a href="{% url 'sign_in' %}" class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition w-full mt-4 inline-flex items-center justify-center">
                     Sign in
                 </a>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -553,6 +571,307 @@
                     }
                 }
             });
+        });
+    </script>
+
+    <!-- Animation d'avion -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialisation du canvas
+            const canvas = document.getElementById('planeCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Ajuster la taille du canvas à la fenêtre
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            // Appeler au chargement et lors du redimensionnement
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Gestion des événements de souris pour déplacer l'avion
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseup', handleMouseUp);
+            canvas.addEventListener('mouseleave', handleMouseUp);
+            
+            // Gestion des événements tactiles pour les appareils mobiles
+            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchmove', handleTouchMove);
+            canvas.addEventListener('touchend', handleTouchEnd);
+            canvas.addEventListener('touchcancel', handleTouchEnd);
+            
+            // Charger l'image de l'avion
+            const planeImage = new Image();
+            planeImage.src = '/static/images/logos/avion.png';
+            
+            // Obtenir la couleur ocean du CSS
+            const oceanColor = getComputedStyle(document.documentElement).getPropertyValue('--ocean').trim();
+            
+            // Paramètres de l'avion
+            const plane = {
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height * 0.5, // Dans la moitié supérieure
+                size: 48, // Taille de l'avion doublée
+                speed: 0.8, // Vitesse réduite
+                dx: (Math.random() - 0.5) * 2, // Direction X aléatoire (-1 à 1)
+                dy: (Math.random() - 0.5) * 2, // Direction Y aléatoire (-1 à 1)
+                angle: 0,
+                trails: [], // Tableau pour stocker les traits
+                lastTrailTime: Date.now(), // Horodatage du dernier trait
+                lastPosition: null, // Dernière position pour créer les traits
+                isDragging: false, // Indique si l'avion est en train d'être déplacé
+                savedDx: 0, // Sauvegarde de la direction X avant le déplacement
+                savedDy: 0  // Sauvegarde de la direction Y avant le déplacement
+            };
+            
+            // Normaliser le vecteur de direction
+            const magnitude = Math.sqrt(plane.dx * plane.dx + plane.dy * plane.dy);
+            plane.dx /= magnitude;
+            plane.dy /= magnitude;
+            
+            // Fonction pour dessiner l'avion avec l'image
+            function drawPlane() {
+                ctx.save();
+                
+                // Calculer l'angle en fonction de la direction
+                plane.angle = Math.atan2(plane.dy, plane.dx);
+                
+                // Translater et tourner au centre de l'avion
+                ctx.translate(plane.x, plane.y);
+                ctx.rotate(plane.angle); // Pivoter l'avion selon la direction
+                
+                // Taille doublée de l'image d'avion
+                const width = 96;
+                const height = 96;
+                
+                // Réduire l'opacité de l'avion
+                ctx.globalAlpha = 0.8;
+                
+                // Dessiner l'avion centré à sa position
+                ctx.drawImage(planeImage, -width/2, -height/2, width, height);
+                
+                // Rétablir l'opacité normale
+                ctx.globalAlpha = 1.0;
+                
+                ctx.restore();
+            }
+            
+            // Fonction pour dessiner les traits laissés par l'avion
+            function drawTrails() {
+                // Pour chaque trait de la traînée
+                for (let i = 0; i < plane.trails.length; i++) {
+                    const trail = plane.trails[i];
+                    
+                    // Calculer l'opacité actuelle du trait
+                    let opacity = 0;
+                    if (trail.isPair) {
+                        const elapsedTimeInSeconds = (Date.now() - trail.timestamp) / 1000;
+                        const opacityLoss = elapsedTimeInSeconds * 0.05; // Perte de 5% d'opacité par seconde
+                        opacity = Math.max(0, 1 - opacityLoss);
+                    }
+                    
+                    // Ne dessiner que si le trait est encore visible
+                    if (opacity > 0) {
+                        ctx.beginPath();
+                        ctx.moveTo(trail.startX, trail.startY);
+                        ctx.lineTo(trail.endX, trail.endY);
+                        
+                        // Style du trait
+                        ctx.strokeStyle = `rgba(1, 50, 76, ${opacity})`; // Couleur ocean avec opacité variable
+                        ctx.lineWidth = 3; // Retour à l'épaisseur normale
+                        ctx.lineCap = 'round';
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            // Fonction pour mettre à jour la position de l'avion
+            function updatePlane() {
+                const now = Date.now();
+                
+                // Initialiser la dernière position s'il n'y en a pas encore
+                if (plane.lastPosition === null) {
+                    plane.lastPosition = { x: plane.x, y: plane.y };
+                }
+                
+                // Ne déplacer l'avion que s'il n'est pas en train d'être déplacé manuellement
+                if (!plane.isDragging) {
+                    plane.x += plane.dx * plane.speed;
+                    plane.y += plane.dy * plane.speed;
+                }
+                
+                // Gérer les rebonds sur les bords de l'écran
+                if (plane.x < plane.size || plane.x > canvas.width - plane.size) {
+                    plane.dx = -plane.dx; // Inverser la direction X
+                    // légère deviation aléatoire
+                    plane.dy += (Math.random() - 0.5) * 0.2;
+                    normalizeDirection();
+                }
+                
+                if (plane.y < plane.size || plane.y > canvas.height - plane.size) {
+                    plane.dy = -plane.dy; // Inverser la direction Y
+                    // légère deviation aléatoire
+                    plane.dx += (Math.random() - 0.5) * 0.2;
+                    normalizeDirection();
+                }
+                
+                // Ajouter un trait toutes les 500ms
+                if (now - plane.lastTrailTime >= 500) { // 500ms = 0.5 seconde
+                    // Calculer le point de départ plus proche pour réduire la longueur du trait
+                    const dx = plane.x - plane.lastPosition.x;
+                    const dy = plane.y - plane.lastPosition.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const minLength = 25; // Longueur minimale du trait
+                    const maxLength = 25; // Longueur maximale du trait
+                    
+                    // Si la distance est trop petite, on la force à la longueur minimale
+                    const adjustedDistance = Math.max(distance, minLength);
+                    
+                    let startX = plane.x;
+                    let startY = plane.y;
+                    if (adjustedDistance > maxLength) {
+                        const ratio = (adjustedDistance - maxLength) / adjustedDistance;
+                        startX = plane.x - dx * ratio;
+                        startY = plane.y - dy * ratio;
+                    }
+
+                    // Numéro du trait (basé sur la longueur actuelle du tableau)
+                    const trailNumber = plane.trails.length;
+                    const isPair = trailNumber % 2 === 0;
+                    
+                    plane.trails.push({
+                        startX: startX,
+                        startY: startY,
+                        endX: plane.x,
+                        endY: plane.y,
+                        timestamp: now,
+                        isPair: isPair
+                    });
+                    
+                    // Mettre à jour la dernière position et l'horodatage
+                    plane.lastPosition = { x: plane.x, y: plane.y };
+                    plane.lastTrailTime = now;
+                }
+                
+                // Nettoyer les traits invisibles (opacité à 0 après 20 secondes)
+                const twentySecondsAgo = now - 20000;
+                plane.trails = plane.trails.filter(trail => trail.timestamp > twentySecondsAgo);
+            }
+            
+            // Normaliser le vecteur de direction
+            function normalizeDirection() {
+                const magnitude = Math.sqrt(plane.dx * plane.dx + plane.dy * plane.dy);
+                plane.dx /= magnitude;
+                plane.dy /= magnitude;
+            }
+            
+            // Fonction d'animation principale
+            function animate() {
+                // Effacer le canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Mettre à jour et dessiner
+                updatePlane();
+                drawTrails();
+                drawPlane();
+                
+                // Boucle d'animation
+                requestAnimationFrame(animate);
+            }
+            
+            // Fonction pour vérifier si le clic est sur l'avion
+            function isClickOnPlane(x, y) {
+                const dx = x - plane.x;
+                const dy = y - plane.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                return distance < plane.size; // Si le clic est dans le rayon de l'avion
+            }
+            
+            // Gestion du clic de souris
+            function handleMouseDown(e) {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                if (isClickOnPlane(x, y)) {
+                    // Sauvegarder la direction actuelle
+                    plane.savedDx = plane.dx;
+                    plane.savedDy = plane.dy;
+                    
+                    // Arrêter le mouvement
+                    plane.dx = 0;
+                    plane.dy = 0;
+                    plane.isDragging = true;
+                    
+                    // Changer le style du curseur
+                    canvas.style.cursor = 'grabbing';
+                }
+            }
+            
+            // Gestion du déplacement de la souris
+            function handleMouseMove(e) {
+                if (plane.isDragging) {
+                    const rect = canvas.getBoundingClientRect();
+                    plane.x = e.clientX - rect.left;
+                    plane.y = e.clientY - rect.top;
+                }
+            }
+            
+            // Gestion du relâchement de la souris
+            function handleMouseUp() {
+                if (plane.isDragging) {
+                    // Restaurer la direction sauvegardée
+                    plane.dx = plane.savedDx;
+                    plane.dy = plane.savedDy;
+                    plane.isDragging = false;
+                    
+                    // Réinitialiser le curseur
+                    canvas.style.cursor = 'default';
+                }
+            }
+            
+            // Gestion du toucher (pour appareils mobiles)
+            function handleTouchStart(e) {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                
+                if (isClickOnPlane(x, y)) {
+                    // Sauvegarder la direction actuelle
+                    plane.savedDx = plane.dx;
+                    plane.savedDy = plane.dy;
+                    
+                    // Arrêter le mouvement
+                    plane.dx = 0;
+                    plane.dy = 0;
+                    plane.isDragging = true;
+                }
+            }
+            
+            // Gestion du déplacement du doigt
+            function handleTouchMove(e) {
+                e.preventDefault();
+                if (plane.isDragging) {
+                    const rect = canvas.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    plane.x = touch.clientX - rect.left;
+                    plane.y = touch.clientY - rect.top;
+                }
+            }
+            
+            // Gestion de la fin du toucher
+            function handleTouchEnd(e) {
+                e.preventDefault();
+                handleMouseUp(); // Réutiliser la même fonction que pour la souris
+            }
+            
+            // Démarrer l'animation
+            animate();
         });
     </script>
 </body>

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load socialaccount %}
+
+{% block title %}Authentification Google | TicketsPlease{% endblock %}
+
+{% block extra_head %}
+<style>
+    body {
+        background: transparent;
+        overflow: hidden;
+    }
+    
+    .loader {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+    }
+    
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(1, 50, 76, 0.1);
+        border-left-color: var(--ocean);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .message {
+        margin-top: 20px;
+        font-family: 'Poppins', sans-serif;
+        color: var(--ocean);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="loader">
+    <div class="spinner"></div>
+    <div class="message">Connexion avec Google en cours...</div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Rediriger vers l'URL d'authentification Google
+        window.location.href = "{% provider_login_url 'google' process='login' %}";
+    });
+
+    // Fonction pour envoyer un message à la fenêtre parente
+    function notifyAuthComplete() {
+        if (window.opener && !window.opener.closed) {
+            window.opener.postMessage('google-auth-complete', '*');
+        }
+    }
+
+    // En cas de réussite, nous serons redirigés ailleurs, mais si nous restons sur cette page
+    // (en cas d'échec), on le notifie à la fenêtre parente
+    window.addEventListener('unload', function() {
+        notifyAuthComplete();
+    });
+</script>
+{% endblock %}

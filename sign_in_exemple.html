@@ -210,7 +210,7 @@
                     </form>
                     
                     <div class="mt-8 mb-2">
-                        <button class="w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg font-medium flex items-center justify-center hover:bg-gray-50 transition-colors">
+                        <button id="googleSignInBtn" class="w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg font-medium flex items-center justify-center hover:bg-gray-50 transition-colors">
                             <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
                                 <path fill="#4285F4" d="M12.24 10.92V8.4h6.24v.72h-5.52v1.68h5.28v.72h-5.28v1.68h5.52v.72H12.24z"></path>
                                 <path fill="#34A853" d="M5.76 9.6a6.48 6.48 0 016.48-6.48c1.68 0 3.12.6 4.2 1.56l-1.68 1.68c-.48-.36-1.08-.6-1.92-.6-1.56 0-2.88 1.2-3.24 2.88H4.32v2.16h1.44v3.6H4.8v2.16h5.28v-9.6H5.76z"></path>
@@ -223,7 +223,7 @@
                     <div class="mt-6 text-center">
                         <p class="text-gray-600">
                             Don't have an account?
-                            <a href="#" class="text-blue-500 font-medium hover:text-blue-700 transition-colors">Sign up</a>
+                            <a href="#" class="text-blue-500 font-medium hover:text-blue-700 transition-colors" id="signUpBtn">Sign up</a>
                         </p>
                     </div>
                 </div>
@@ -246,12 +246,97 @@
         </div>
     </div>
 
+    <!-- Sign Up Modal -->
+    <div id="signUpModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden perforated-border max-w-md w-full mx-4 transform transition-all">
+            <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-6 relative">
+                <button id="closeSignUpModal" class="absolute top-4 right-4 text-white hover:text-orange-200 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h2 class="text-2xl font-bold text-white text-center">Create Your Account</h2>
+                <p class="text-orange-100 text-center">Begin your journey with TicketsPlease</p>
+            </div>
+            
+            <div class="p-8">
+                <form id="signUpForm">
+                    <div class="mb-6">
+                        <label class="block text-gray-700 mb-2" for="fullName">Full Name</label>
+                        <div class="input-icon relative border border-gray-300 rounded-lg focus-within:border-orange-500 transition-colors">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                            <input id="fullName" type="text" class="w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-0" placeholder="John Doe">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-700 mb-2" for="signUpEmail">Email Address</label>
+                        <div class="input-icon relative border border-gray-300 rounded-lg focus-within:border-orange-500 transition-colors">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <input id="signUpEmail" type="email" class="w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-0" placeholder="you@example.com">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-700 mb-2" for="signUpPassword">Create Password</label>
+                        <div class="input-icon relative border border-gray-300 rounded-lg focus-within:border-orange-500 transition-colors">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                            </div>
+                            <input id="signUpPassword" type="password" class="w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-0" placeholder="••••••••">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-700 mb-2" for="confirmPassword">Confirm Password</label>
+                        <div class="input-icon relative border border-gray-300 rounded-lg focus-within:border-orange-500 transition-colors">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                            </div>
+                            <input id="confirmPassword" type="password" class="w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-0" placeholder="••••••••">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <div class="flex items-center">
+                            <input id="terms" type="checkbox" class="h-4 w-4 text-orange-500 rounded border-gray-300 focus:ring-orange-500">
+                            <label for="terms" class="ml-2 text-sm text-gray-700">
+                                I agree to the <a href="#" class="text-orange-500 hover:text-orange-700">Terms of Service</a> and <a href="#" class="text-orange-500 hover:text-orange-700">Privacy Policy</a>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="button" id="createAccountBtn" class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 px-4 rounded-lg font-medium hover:from-orange-600 hover:to-orange-700 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 flex items-center justify-center">
+                        <i class="fas fa-user-plus mr-2"></i>Create Account
+                    </button>
+                </form>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-gray-600">
+                        Already have an account?
+                        <button id="switchToSignIn" class="text-orange-500 font-medium hover:text-orange-700 transition-colors">Sign in</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Footer -->
     <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="text-gray-600 mb-4 md:mb-0">
-                    © 2023 TicketsPlease. All your travel tickets in one place.
+                    2023 TicketsPlease. All your travel tickets in one place.
                 </div>
                 <div class="flex space-x-6">
                     <a href="#" class="text-gray-500 hover:text-orange-500 transition-colors">
@@ -300,6 +385,111 @@
         
         luggage.addEventListener('mouseleave', () => {
             luggage.style.transform = '';
+        });
+        
+        // Sign Up Modal functionality
+        const signUpBtn = document.getElementById('signUpBtn');
+        const signUpModal = document.getElementById('signUpModal');
+        const closeSignUpModal = document.getElementById('closeSignUpModal');
+        const switchToSignIn = document.getElementById('switchToSignIn');
+        const createAccountBtn = document.getElementById('createAccountBtn');
+        
+        // Open modal when Sign Up is clicked
+        signUpBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            signUpModal.classList.remove('hidden');
+            signUpModal.classList.add('flex');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        });
+        
+        // Close modal functions
+        function closeModal() {
+            signUpModal.classList.add('hidden');
+            signUpModal.classList.remove('flex');
+            document.body.style.overflow = ''; // Re-enable scrolling
+        }
+        
+        closeSignUpModal.addEventListener('click', closeModal);
+        switchToSignIn.addEventListener('click', closeModal);
+        
+        // Close modal when clicking outside
+        signUpModal.addEventListener('click', function(e) {
+            if (e.target === signUpModal) {
+                closeModal();
+            }
+        });
+        
+        // Sign Up form validation
+        createAccountBtn.addEventListener('click', function() {
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('signUpEmail').value;
+            const password = document.getElementById('signUpPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+            
+            if (!fullName || !email || !password || !confirmPassword) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            if (!terms) {
+                alert('Please agree to the Terms of Service and Privacy Policy');
+                return;
+            }
+            
+            // Animation effect on button
+            this.classList.add('animate-ping');
+            setTimeout(() => {
+                this.classList.remove('animate-ping');
+                
+                // Simulate successful sign up
+                alert('Account created successfully! Welcome to TicketsPlease.');
+                closeModal();
+            }, 800);
+        });
+        
+        // Google Sign In Popup
+        const googleSignInBtn = document.getElementById('googleSignInBtn');
+        googleSignInBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // URL for Google authentication
+            const googleAuthUrl = '/accounts/google/login/?process=login';
+            
+            // Popup window dimensions
+            const width = 600;
+            const height = 600;
+            const left = (window.innerWidth - width) / 2;
+            const top = (window.innerHeight - height) / 2;
+            
+            // Open the popup window
+            const googleAuthWindow = window.open(
+                googleAuthUrl,
+                'googleAuth',
+                `width=${width},height=${height},left=${left},top=${top},toolbar=0,scrollbars=1,status=1,resizable=1,location=1`
+            );
+            
+            // Focus on the popup
+            if (googleAuthWindow) googleAuthWindow.focus();
+            
+            // Poll for changes and handle when the popup is closed
+            const pollTimer = window.setInterval(function() {
+                try {
+                    // Check if auth is complete
+                    if (googleAuthWindow.closed) {
+                        window.clearInterval(pollTimer);
+                        // On success, we would typically reload the page or redirect
+                        // window.location.reload();
+                    }
+                } catch(e) {
+                    console.error('Error polling the popup window:', e);
+                }
+            }, 500);
         });
     </script>
 </body>
