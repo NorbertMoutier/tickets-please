@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Authentification réussie{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-box">
+        <div class="auth-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="auth-message">Connexion réussie</div>
+    </div>
+</div>
+
+<script>
+    console.log("Page de fermeture chargée");
+    
+    function closePopupAndNotify() {
+        console.log("Tentative d'envoi de message et fermeture");
+        
+        if (window.opener) {
+            try {
+                // Envoyer le message à la fenêtre parente
+                console.log("Envoi du message à la fenêtre parente");
+                window.opener.postMessage({
+                    type: 'google-auth-complete',
+                    success: true,
+                    redirectUrl: '/account/'
+                }, '*');
+                
+                console.log("Message envoyé, fermeture de la fenêtre");
+                setTimeout(function() {
+                    window.close();
+                }, 500);
+            } catch (e) {
+                console.error("Erreur lors de la communication:", e);
+            }
+        } else {
+            console.warn("Pas de fenêtre parente détectée");
+        }
+    }
+    
+    // Exécuter immédiatement
+    closePopupAndNotify();
+    
+    // Et aussi au chargement du DOM (pour s'assurer que ça s'exécute)
+    document.addEventListener('DOMContentLoaded', closePopupAndNotify);
+</script>
+{% endblock %}

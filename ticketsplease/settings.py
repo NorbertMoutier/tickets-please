@@ -54,6 +54,30 @@ LOGGING = {
 
 # Application definition
 
+# CSRF settings
+# Configuration CSRF pour le développement
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8000',   # Serveur de développement Django
+    'http://localhost:8000',   # Alternative pour le serveur Django
+    'http://127.0.0.1:64207',  # Port actuel du proxy
+    'http://localhost:64207',  # Alternative pour le port actuel
+]
+
+# Configurer CSRF_COOKIE_DOMAIN pour permettre le partage entre sous-domaines
+CSRF_COOKIE_DOMAIN = '127.0.0.1'
+
+# Configurer CSRF_COOKIE_SAMESITE à 'None' pour permettre les requêtes cross-site
+# Attention: nécessite que CSRF_COOKIE_SECURE soit True
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+
+# Configurer CORS pour permettre les requêtes cross-origin
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = [
+    'http://127.0.0.1:64207',
+    'http://localhost:64207',
+]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -62,6 +86,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'corsheaders',  # Ajout de django-cors-headers
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -72,6 +97,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # Ajout du middleware CORS (doit être avant CommonMiddleware)
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -178,7 +204,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SITE_ID = 1
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/account/'
 LOGOUT_REDIRECT_URL = '/'
 
 # Django-allauth settings
@@ -223,10 +249,12 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 # Paramètres généraux pour les comptes sociaux
-SOCIALACCOUNT_ADAPTER = 'allauth.socialaccount.adapter.DefaultSocialAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'accounts.adapter.CustomSocialAccountAdapter'
 SOCIALACCOUNT_AUTO_SIGNUP = True  # Inscription automatique
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'  # Pas besoin de vérification pour les comptes sociaux
 SOCIALACCOUNT_EMAIL_REQUIRED = True  # Email requis
+# Redirection spécifique pour les comptes sociaux
+SOCIALACCOUNT_LOGIN_ON_GET = False  # Désactivé pour éviter la connexion automatique
 SOCIALACCOUNT_STORE_TOKENS = True  # Stocker les tokens pour réutilisation
 
 # Paramètres pour la scalabilité

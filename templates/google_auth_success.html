@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Authentification réussie | TicketsPlease{% endblock %}
+
+{% block extra_head %}
+<style>
+    body {
+        background: transparent;
+        overflow: hidden;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .success-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+    }
+    
+    .success-icon {
+        color: #4CAF50;
+        font-size: 48px;
+        margin-bottom: 16px;
+    }
+    
+    .success-message {
+        color: var(--ocean);
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <div class="success-icon">
+        <i class="fas fa-check-circle"></i>
+    </div>
+    <div class="success-message">Connexion réussie</div>
+</div>
+
+<script>
+    // Fonction pour envoyer un message à la fenêtre parente
+    function notifyAuthSuccess() {
+        console.log("Page de succès : tentative de notification à la fenêtre parente");
+        
+        if (window.opener && !window.opener.closed) {
+            console.log("Page de succès : fenêtre parente trouvée, envoi du message");
+            
+            try {
+                // Envoyer un message avec le statut d'authentification
+                window.opener.postMessage({
+                    type: 'google-auth-complete',
+                    success: true,
+                    redirectUrl: '{% url "account" %}'
+                }, '*');
+                
+                console.log("Page de succès : message envoyé à la fenêtre parente");
+                
+                // Fermer la popup immédiatement après l'envoi du message
+                console.log("Page de succès : fermeture de la popup dans 500ms");
+                setTimeout(function() {
+                    console.log("Page de succès : fermeture de la popup maintenant");
+                    window.close();
+                    
+                    // Au cas où window.close() ne fonctionne pas (certains navigateurs le bloquent)
+                    // Essayer de rediriger vers une page qui se ferme automatiquement
+                    setTimeout(function() {
+                        document.body.innerHTML = '<h1>Connexion réussie, vous pouvez fermer cette fenêtre</h1><script>window.close();<\/script>';
+                    }, 200);
+                }, 500);
+            } catch (e) {
+                console.error("Page de succès : erreur lors de l'envoi du message", e);
+            }
+        } else {
+            console.warn("Page de succès : pas de fenêtre parente trouvée pour la notification");
+        }
+    }
+    
+    // Exécuter immédiatement
+    console.log("Page de succès : chargement");
+    notifyAuthSuccess();
+    
+    // Aussi exécuter lors de l'événement DOMContentLoaded par sécurité
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Page de succès : DOMContentLoaded");
+        notifyAuthSuccess();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fermeture...</title>
+    <script>
+    // Auto-exécution immédiate
+    (function() {
+        console.log("Tentative de fermeture de la popup");
+        
+        // Fonction pour rediriger la page principale
+        function redirectParent() {
+            try {
+                if (window.opener) {
+                    console.log("Redirection de la fenêtre parente");
+                    window.opener.location.href = '/account/';
+                }
+            } catch(e) {
+                console.error("Erreur lors de la redirection:", e);
+            }
+        }
+        
+        // Fonction pour fermer cette fenêtre
+        function closeThisWindow() {
+            try {
+                console.log("Fermeture de cette fenêtre");
+                window.close();
+            } catch(e) {
+                console.error("Erreur lors de la fermeture:", e);
+            }
+        }
+        
+        // Exécuter immédiatement
+        redirectParent();
+        closeThisWindow();
+        
+        // Réessayer en séquence avec des délais croissants
+        setTimeout(function() {
+            redirectParent();
+            closeThisWindow();
+        }, 100);
+        
+        setTimeout(function() {
+            redirectParent();
+            closeThisWindow();
+        }, 500);
+        
+        setTimeout(function() {
+            redirectParent();
+            closeThisWindow();
+            // Si tout échoue, afficher un bouton
+            document.body.innerHTML = '<div style="text-align:center;padding:30px;font-family:Arial;"><h1>Connexion réussie!</h1><p>Si cette fenêtre ne se ferme pas automatiquement, cliquez sur le bouton ci-dessous.</p><button style="padding:10px 20px;background:#1a73e8;color:white;border:none;border-radius:4px;font-size:16px;cursor:pointer;" onclick="window.close()">Fermer cette fenêtre</button></div>';
+        }, 1000);
+    })();
+    </script>
+</head>
+<body style="background-color:#f5f5f5;font-family:Arial;">
+    <div style="text-align:center;padding:30px;">
+        <h2>Authentification réussie</h2>
+        <p>Cette fenêtre va se fermer automatiquement...</p>
+    </div>
+</body>
+</html>

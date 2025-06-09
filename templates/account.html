@@ -4,6 +4,52 @@
 {% block title %}Mon Compte - TicketsPlease{% endblock %}
 
 {% block content %}
+<script>
+    // Détection de popup et auto-fermeture
+    (function() {
+        console.log('Vérification si cette page est dans une popup');
+        
+        // Détecter si nous sommes dans une popup
+        var isInPopup = false;
+        
+        // Méthode 1: vérifier la taille de la fenêtre (les popups sont généralement plus petites)
+        if (window.innerWidth < 800 && window.innerHeight < 800) {
+            isInPopup = true;
+            console.log('Détecté comme popup par la taille de fenêtre');
+        }
+        
+        // Méthode 2: vérifier si c'est une fenêtre indépendante sans barre d'onglets
+        try {
+            isInPopup = isInPopup || (window.opener && window.opener !== window);
+            if (window.opener) {
+                console.log('Détecté comme popup car window.opener existe');
+            }
+        } catch(e) {
+            console.error('Erreur lors de la vérification de window.opener:', e);
+        }
+        
+        // Si nous sommes dans une popup, fermer et rediriger la page principale
+        if (isInPopup) {
+            console.log('Cette page est dans une popup, tentative de redirection et fermeture');
+            try {
+                // Rediriger la page principale si possible
+                if (window.opener) {
+                    console.log('Redirection de la page principale vers /account/');
+                    window.opener.location.href = '/account/';
+                }
+                
+                // Fermer cette fenêtre
+                console.log('Fermeture de la popup');
+                setTimeout(function() {
+                    window.close();
+                }, 100);
+            } catch(e) {
+                console.error('Erreur lors de la fermeture/redirection:', e);
+            }
+        }
+    })();
+</script>
+
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto">
         <div class="bg-white rounded-2xl shadow-xl p-8">

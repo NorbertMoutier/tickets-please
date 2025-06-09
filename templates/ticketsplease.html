@@ -1,90 +1,61 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tickets Please - Manage all your travel tickets in one place. No more digging through emails, access your QR codes even offline.">
-    <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
-    <title>Tickets Please - All your travel tickets, one tap away</title>
-    <link rel="icon" type="image/png" href="{% static 'images/tickets_please_favicon.png' %}">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --sunset: #FFB967;
-            --sand: #FFECD1;
-            --ocean: #01324C;
-            --ocean-light: #005D8D;
-        }
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: white;
-            background-image: radial-gradient(var(--sand) 1px, transparent 1px);
-            background-size: 40px 40px;
-            scroll-behavior: smooth;
-        }
-        
-        .dotted-map {
-            background-image: radial-gradient(var(--sand) 1px, transparent 1px);
-            background-size: 40px 40px;
-            opacity: 0.3;
-        }
-        
-        .feature-card:hover .feature-icon {
-            transform: scale(1.1);
-            color: var(--ocean);
-        }
-        
-        .testimonial-slide {
-            transition: transform 0.5s ease;
-        }
-        
-        .nav-scrolled {
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            background-color: rgb(255 255 255 / 0.9);
-            backdrop-filter: blur(4px);
-        }
-    </style>
-    <link rel="stylesheet" href="{% static 'css/ticketsplease_style.css' %}">
-</head>
-<body class="text-[#333] relative overflow-x-hidden">
+{% block extra_js %}
+    {{ block.super }}
+{% endblock %}
+{% block title %}Tickets Please - All your travel tickets, one tap away{% endblock %}
+
+{% block extra_head %}
+<meta name="description" content="Tickets Please - Manage all your travel tickets in one place. No more digging through emails, access your QR codes even offline.">
+<link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+<style>
+    body {
+        background-color: white;
+        background-image: radial-gradient(var(--sand) 1px, transparent 1px);
+        background-size: 40px 40px;
+        scroll-behavior: smooth;
+    }
+</style>
+{% endblock %}
+{% block content %}
     <!-- Canvas pour l'animation d'avion -->
-    <canvas id="planeCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-10"></canvas>
-    <!-- Navigation -->
-    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4">
+    <canvas id="planeCanvas" class="fixed top-0 left-0 w-full h-full z-10"></canvas>
+    
+    <!-- Header avec navigation intégrée -->
+    <header class="fixed w-full z-50 transition-all duration-300 py-4 bg-white bg-opacity-95 backdrop-blur-sm shadow-sm">
         <div class="container mx-auto px-6 flex justify-between items-center">
             <div class="flex items-center">
                 <img src="{% static 'images/tickets_please_with_text.png' %}" alt="Tickets Please Logo" class="h-10 mr-3">
                 <span class="text-xl font-bold text-[var(--ocean)]">Tickets Please</span>
             </div>
-            <div class="hidden md:flex space-x-8">
-                <a href="#features" class="hover:text-[var(--sunset)] transition">Features</a>
-                <a href="#how-it-works" class="hover:text-[var(--sunset)] transition">How it works</a>
-                <a href="#testimonials" class="hover:text-[var(--sunset)] transition">Testimonials</a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#fonctionnalites" class="hover:text-[var(--sunset)] transition">Fonctionnalités</a>
+                <a href="#pricing" class="hover:text-[var(--sunset)] transition">Pricing</a>
+                <a href="#qui-sommes-nous" class="hover:text-[var(--sunset)] transition">Qui sommes-nous</a>
+                <a href="#demo" class="hover:text-[var(--sunset)] transition">Démo</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'account' %}" class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition inline-flex items-center justify-center">
+                    <i class="fas fa-user-circle mr-2"></i>Mon compte
+                </a>
+                {% else %}
+                <a href="{% url 'sign_in' %}" class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition inline-flex items-center justify-center">
+                    Sign in
+                </a>
+                {% endif %}
             </div>
-
-            {% if user.is_authenticated %}
-            <a href="{% url 'account' %}" class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition md:block hidden inline-flex items-center justify-center">
-                <i class="fas fa-user-circle mr-2"></i>Mon compte
-            </a>
-            {% else %}
-            <a href="{% url 'sign_in' %}" class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition md:block hidden inline-flex items-center justify-center">
-                Sign in
-            </a>
-            {% endif %}
+            <!-- Bouton menu mobile -->
             <button id="mobile-menu-button" class="md:hidden text-[var(--ocean)]">
                 <i class="fas fa-bars text-2xl"></i>
             </button>
         </div>
-        <!-- Mobile menu -->
+        
+        <!-- Menu mobile -->
         <div id="mobile-menu" class="hidden md:hidden bg-white w-full absolute left-0 top-full shadow-lg">
             <div class="container mx-auto px-6 py-4 flex flex-col space-y-4">
-                <a href="#features" class="hover:text-[var(--sunset)] transition">Features</a>
-                <a href="#how-it-works" class="hover:text-[var(--sunset)] transition">How it works</a>
-                <a href="#testimonials" class="hover:text-[var(--sunset)] transition">Testimonials</a>
+                <a href="#fonctionnalites" class="hover:text-[var(--sunset)] transition">Fonctionnalités</a>
+                <a href="#pricing" class="hover:text-[var(--sunset)] transition">Pricing</a>
+                <a href="#qui-sommes-nous" class="hover:text-[var(--sunset)] transition">Qui sommes-nous</a>
+                <a href="#demo" class="hover:text-[var(--sunset)] transition">Démo</a>
                 
                 {% if user.is_authenticated %}
                 <a href="{% url 'account' %}" class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition w-full mt-4 inline-flex items-center justify-center">
@@ -100,7 +71,7 @@
                 {% endif %}
             </div>
         </div>
-    </nav>
+    </header>
 
     <!-- Hero Section -->
     <section class="pt-32 pb-20 px-6">
@@ -116,9 +87,9 @@
                     <button class="bg-[var(--sunset)] text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition font-medium">
                         Join the beta
                     </button>
-                    <button class="border-2 border-[var(--ocean)] text-[var(--ocean)] px-8 py-3 rounded-full hover:bg-[var(--sand)] transition font-medium">
+                    <a href="#demo" class="border-2 border-[var(--ocean)] text-[var(--ocean)] px-8 py-3 rounded-full hover:bg-[var(--sand)] transition font-medium text-center">
                         Watch demo
-                    </button>
+                    </a>
                 </div>
                 <div class="mt-8 flex space-x-4">
                     <div class="flex items-center">
@@ -182,8 +153,8 @@
         </div>
     </section>
 
-    <!-- Features -->
-    <section id="features" class="py-20 px-6">
+    <!-- Fonctionnalités -->
+    <section id="fonctionnalites" class="py-20 px-6">
         <div class="container mx-auto">
             <h2 class="text-3xl font-bold text-center text-[var(--ocean)] mb-4 fade-in">
                 Travel smarter, not harder
@@ -262,8 +233,8 @@
         </div>
     </section>
 
-    <!-- How it works -->
-    <section id="how-it-works" class="py-20 bg-[var(--sand)] bg-opacity-30 px-6">
+    <!-- Pricing -->
+    <section id="pricing" class="py-20 px-6 bg-[var(--sand)] bg-opacity-30">
         <div class="container mx-auto">
             <h2 class="text-3xl font-bold text-center text-[var(--ocean)] mb-4 fade-in">
                 How Tickets Please works
@@ -324,8 +295,28 @@
         </div>
     </section>
 
-    <!-- Testimonials -->
-    <section id="testimonials" class="py-20 px-6">
+    <!-- App Screenshots / Démo -->
+    <section id="demo" class="py-20 px-6 bg-[var(--ocean)] text-white">
+        <div class="container mx-auto text-center fade-in">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
+                Ready for your most organised trip yet?
+            </h2>
+            <p class="text-white text-opacity-90 max-w-2xl mx-auto mb-8">
+                Join thousands of travelers who've made PocketPass their essential travel companion.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <button class="bg-white text-[var(--ocean)] px-8 py-3 rounded-full hover:bg-opacity-90 transition font-medium">
+                    Get Early Access
+                </button>
+                <button class="border-2 border-white text-white px-8 py-3 rounded-full hover:bg-white hover:bg-opacity-10 transition font-medium">
+                    Watch Demo Video
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Qui sommes-nous -->
+    <section id="qui-sommes-nous" class="py-20 px-6">
         <div class="container mx-auto">
             <h2 class="text-3xl font-bold text-center text-[var(--ocean)] mb-4 fade-in">
                 Loved by travelers worldwide
@@ -483,7 +474,7 @@
             </div>
             
             <div class="pt-6 border-t border-gray-200 text-center text-gray-500">
-                <p>Built with ❤️ in France — © PocketPass 2025</p>
+                <p>Built with ❤️ in France — &copy; PocketPass 2025</p>
             </div>
         </div>
     </footer>
@@ -603,9 +594,13 @@
             canvas.addEventListener('touchend', handleTouchEnd);
             canvas.addEventListener('touchcancel', handleTouchEnd);
             
-            // Charger l'image de l'avion
+            // Charger l'image de l'avion et du nuage
             const planeImage = new Image();
             planeImage.src = '/static/images/logos/avion.png';
+            
+            // Charger l'image du nuage
+            const cloudImage = new Image();
+            cloudImage.src = '/static/logos/nuage.png';
             
             // Obtenir la couleur ocean du CSS
             const oceanColor = getComputedStyle(document.documentElement).getPropertyValue('--ocean').trim();
@@ -615,16 +610,22 @@
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height * 0.5, // Dans la moitié supérieure
                 size: 48, // Taille de l'avion doublée
-                speed: 0.8, // Vitesse réduite
-                dx: (Math.random() - 0.5) * 2, // Direction X aléatoire (-1 à 1)
-                dy: (Math.random() - 0.5) * 2, // Direction Y aléatoire (-1 à 1)
+                speed: 0.8, // Vitesse constante
+                dx: 1, // Direction X fixe pour trajectoire rectiligne
+                dy: 0, // Direction Y nulle pour trajectoire horizontale
                 angle: 0,
-                trails: [], // Tableau pour stocker les traits
-                lastTrailTime: Date.now(), // Horodatage du dernier trait
-                lastPosition: null, // Dernière position pour créer les traits
+                clouds: [], // Tableau pour stocker les nuages (au lieu des traits)
+                lastCloudTime: Date.now(), // Horodatage du dernier nuage
+                lastPosition: null, // Dernière position pour créer les nuages
                 isDragging: false, // Indique si l'avion est en train d'être déplacé
                 savedDx: 0, // Sauvegarde de la direction X avant le déplacement
-                savedDy: 0  // Sauvegarde de la direction Y avant le déplacement
+                savedDy: 0,  // Sauvegarde de la direction Y avant le déplacement
+                // Ajout pour la trajectoire légèrement courbée
+                turnDir: Math.random() < 0.5 ? -1 : 1, // Direction de rotation aléatoire
+                turnSpeed: (Math.random() * 0.2 + 0.05) * Math.PI / 180, // 0.05-0.25° par frame (courbure légère)
+                time: performance.now() * 0.001,
+                // Ajout pour le changement de trajectoire aléatoire toutes les 10s
+                lastCurveChangeTime: Date.now() // Horodatage du dernier changement de courbure
             };
             
             // Normaliser le vecteur de direction
@@ -659,31 +660,27 @@
                 ctx.restore();
             }
             
-            // Fonction pour dessiner les traits laissés par l'avion
+            // Fonction pour dessiner les nuages laissés par l'avion
             function drawTrails() {
-                // Pour chaque trait de la traînée
-                for (let i = 0; i < plane.trails.length; i++) {
-                    const trail = plane.trails[i];
+                // Pour chaque nuage dans la traînée
+                for (let i = 0; i < plane.clouds.length; i++) {
+                    const cloud = plane.clouds[i];
                     
-                    // Calculer l'opacité actuelle du trait
-                    let opacity = 0;
-                    if (trail.isPair) {
-                        const elapsedTimeInSeconds = (Date.now() - trail.timestamp) / 1000;
-                        const opacityLoss = elapsedTimeInSeconds * 0.05; // Perte de 5% d'opacité par seconde
-                        opacity = Math.max(0, 1 - opacityLoss);
-                    }
-                    
-                    // Ne dessiner que si le trait est encore visible
-                    if (opacity > 0) {
-                        ctx.beginPath();
-                        ctx.moveTo(trail.startX, trail.startY);
-                        ctx.lineTo(trail.endX, trail.endY);
+                    // Ne dessiner que si le nuage est encore visible
+                    if (cloud.opacity > 0) {
+                        ctx.save();
                         
-                        // Style du trait
-                        ctx.strokeStyle = `rgba(1, 50, 76, ${opacity})`; // Couleur ocean avec opacité variable
-                        ctx.lineWidth = 3; // Retour à l'épaisseur normale
-                        ctx.lineCap = 'round';
-                        ctx.stroke();
+                        // Appliquer l'opacité
+                        ctx.globalAlpha = cloud.opacity;
+                        
+                        // Dessiner le nuage
+                        const width = cloud.size * 1.5; // Format large pour le nuage
+                        const height = cloud.size;
+                        
+                        // Dessiner le nuage centré à sa position
+                        ctx.drawImage(cloudImage, cloud.x - width/2, cloud.y - height/2, width, height);
+                        
+                        ctx.restore();
                     }
                 }
             }
@@ -692,80 +689,87 @@
             function updatePlane() {
                 const now = Date.now();
                 
+                // Mettre à jour le temps pour l'animation
+                plane.time = performance.now() * 0.001; // Temps en secondes
+                
                 // Initialiser la dernière position s'il n'y en a pas encore
                 if (plane.lastPosition === null) {
                     plane.lastPosition = { x: plane.x, y: plane.y };
                 }
                 
+                // Changer aléatoirement la courbure toutes les 10 secondes
+                if (now - plane.lastCurveChangeTime > 10000) { // 10 secondes
+                    plane.turnDir = Math.random() < 0.5 ? -1 : 1; // Nouvelle direction de rotation aléatoire
+                    plane.turnSpeed = (Math.random() * 0.3 + 0.05) * Math.PI / 180; // Nouvelle vitesse de rotation
+                    plane.lastCurveChangeTime = now;
+                }
+                
                 // Ne déplacer l'avion que s'il n'est pas en train d'être déplacé manuellement
                 if (!plane.isDragging) {
+                    // Légère rotation de l'angle pour une trajectoire courbée
+                    plane.angle += plane.turnDir * plane.turnSpeed;
+                    
+                    // Mettre à jour la direction de déplacement pour une trajectoire légèrement courbée
+                    plane.dx = Math.cos(plane.angle);
+                    plane.dy = Math.sin(plane.angle);
+                    
+                    // Mettre à jour la position
                     plane.x += plane.dx * plane.speed;
                     plane.y += plane.dy * plane.speed;
                 }
                 
-                // Gérer les rebonds sur les bords de l'écran
-                if (plane.x < plane.size || plane.x > canvas.width - plane.size) {
-                    plane.dx = -plane.dx; // Inverser la direction X
-                    // légère deviation aléatoire
-                    plane.dy += (Math.random() - 0.5) * 0.2;
-                    normalizeDirection();
+                // Gérer la traversée des bords de l'écran (réapparition de l'autre côté)
+                if (plane.x < -plane.size) {
+                    plane.x = canvas.width + plane.size;
+                } else if (plane.x > canvas.width + plane.size) {
+                    plane.x = -plane.size;
                 }
                 
-                if (plane.y < plane.size || plane.y > canvas.height - plane.size) {
-                    plane.dy = -plane.dy; // Inverser la direction Y
-                    // légère deviation aléatoire
-                    plane.dx += (Math.random() - 0.5) * 0.2;
-                    normalizeDirection();
+                if (plane.y < -plane.size) {
+                    plane.y = canvas.height + plane.size;
+                } else if (plane.y > canvas.height + plane.size) {
+                    plane.y = -plane.size;
                 }
                 
-                // Ajouter un trait toutes les 500ms
-                if (now - plane.lastTrailTime >= 500) { // 500ms = 0.5 seconde
-                    // Calculer le point de départ plus proche pour réduire la longueur du trait
-                    const dx = plane.x - plane.lastPosition.x;
-                    const dy = plane.y - plane.lastPosition.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    const minLength = 25; // Longueur minimale du trait
-                    const maxLength = 25; // Longueur maximale du trait
-                    
-                    // Si la distance est trop petite, on la force à la longueur minimale
-                    const adjustedDistance = Math.max(distance, minLength);
-                    
-                    let startX = plane.x;
-                    let startY = plane.y;
-                    if (adjustedDistance > maxLength) {
-                        const ratio = (adjustedDistance - maxLength) / adjustedDistance;
-                        startX = plane.x - dx * ratio;
-                        startY = plane.y - dy * ratio;
-                    }
-
-                    // Numéro du trait (basé sur la longueur actuelle du tableau)
-                    const trailNumber = plane.trails.length;
-                    const isPair = trailNumber % 2 === 0;
-                    
-                    plane.trails.push({
-                        startX: startX,
-                        startY: startY,
-                        endX: plane.x,
-                        endY: plane.y,
-                        timestamp: now,
-                        isPair: isPair
+                // Vérifier si on doit ajouter un nouveau nuage
+                if (now - plane.lastCloudTime > 800) { // Toutes les 800ms (réduit de 4 fois)
+                    // Ajouter un nuage à la position actuelle de l'avion
+                    plane.clouds.push({
+                        x: plane.x,
+                        y: plane.y,
+                        size: 20 + Math.random() * 10, // Taille aléatoire
+                        opacity: 0.7, // Opacité initiale
+                        createdAt: now
                     });
                     
-                    // Mettre à jour la dernière position et l'horodatage
-                    plane.lastPosition = { x: plane.x, y: plane.y };
-                    plane.lastTrailTime = now;
+                    plane.lastCloudTime = now;
                 }
                 
-                // Nettoyer les traits invisibles (opacité à 0 après 20 secondes)
-                const twentySecondsAgo = now - 20000;
-                plane.trails = plane.trails.filter(trail => trail.timestamp > twentySecondsAgo);
+                // Mettre à jour l'opacité des nuages existants
+                for (let i = plane.clouds.length - 1; i >= 0; i--) {
+                    const cloud = plane.clouds[i];
+                    const age = now - cloud.createdAt;
+                    
+                    // Réduire l'opacité avec le temps (sur 5 secondes)
+                    cloud.opacity = 0.7 * (1 - Math.min(age / 5000, 1));
+                    
+                    // Supprimer les nuages complètement transparents
+                    if (cloud.opacity <= 0) {
+                        plane.clouds.splice(i, 1);
+                    }
+                }
+                
+                // Mettre à jour la dernière position
+                plane.lastPosition = { x: plane.x, y: plane.y };
             }
             
             // Normaliser le vecteur de direction
             function normalizeDirection() {
                 const magnitude = Math.sqrt(plane.dx * plane.dx + plane.dy * plane.dy);
-                plane.dx /= magnitude;
-                plane.dy /= magnitude;
+                if (magnitude > 0) {
+                    plane.dx /= magnitude;
+                    plane.dy /= magnitude;
+                }
             }
             
             // Fonction d'animation principale
@@ -773,12 +777,16 @@
                 // Effacer le canvas
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // Mettre à jour et dessiner
+                // Mettre à jour et dessiner l'avion
                 updatePlane();
+                
+                // Dessiner d'abord les nuages (sous l'avion)
                 drawTrails();
+                
+                // Puis dessiner l'avion (au-dessus des nuages)
                 drawPlane();
                 
-                // Boucle d'animation
+                // Continuer l'animation
                 requestAnimationFrame(animate);
             }
             
@@ -787,7 +795,7 @@
                 const dx = x - plane.x;
                 const dy = y - plane.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                return distance < plane.size; // Si le clic est dans le rayon de l'avion
+                return distance <= plane.size / 2;
             }
             
             // Gestion du clic de souris
@@ -796,18 +804,17 @@
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
                 
+                // Vérifier si le clic est sur l'avion
                 if (isClickOnPlane(x, y)) {
+                    plane.isDragging = true;
+                    
                     // Sauvegarder la direction actuelle
                     plane.savedDx = plane.dx;
                     plane.savedDy = plane.dy;
                     
-                    // Arrêter le mouvement
+                    // Arrêter temporairement le mouvement
                     plane.dx = 0;
                     plane.dy = 0;
-                    plane.isDragging = true;
-                    
-                    // Changer le style du curseur
-                    canvas.style.cursor = 'grabbing';
                 }
             }
             
@@ -823,42 +830,48 @@
             // Gestion du relâchement de la souris
             function handleMouseUp() {
                 if (plane.isDragging) {
-                    // Restaurer la direction sauvegardée
-                    plane.dx = plane.savedDx;
-                    plane.dy = plane.savedDy;
                     plane.isDragging = false;
                     
-                    // Réinitialiser le curseur
-                    canvas.style.cursor = 'default';
+                    // Restaurer la direction avec une légère variation aléatoire
+                    const angle = Math.atan2(plane.savedDy, plane.savedDx);
+                    const newAngle = angle + (Math.random() * 0.5 - 0.25); // Variation de ±0.25 radians
+                    
+                    plane.dx = Math.cos(newAngle);
+                    plane.dy = Math.sin(newAngle);
                 }
             }
             
             // Gestion du toucher (pour appareils mobiles)
             function handleTouchStart(e) {
                 e.preventDefault();
-                const rect = canvas.getBoundingClientRect();
-                const touch = e.touches[0];
-                const x = touch.clientX - rect.left;
-                const y = touch.clientY - rect.top;
                 
-                if (isClickOnPlane(x, y)) {
-                    // Sauvegarder la direction actuelle
-                    plane.savedDx = plane.dx;
-                    plane.savedDy = plane.dy;
+                if (e.touches.length === 1) {
+                    const touch = e.touches[0];
+                    const rect = canvas.getBoundingClientRect();
+                    const x = touch.clientX - rect.left;
+                    const y = touch.clientY - rect.top;
                     
-                    // Arrêter le mouvement
-                    plane.dx = 0;
-                    plane.dy = 0;
-                    plane.isDragging = true;
+                    // Vérifier si le toucher est sur l'avion
+                    if (isClickOnPlane(x, y)) {
+                        plane.isDragging = true;
+                        
+                        // Sauvegarder la direction actuelle
+                        plane.savedDx = plane.dx;
+                        plane.savedDy = plane.dy;
+                        
+                        // Arrêter temporairement le mouvement
+                        plane.dx = 0;
+                        plane.dy = 0;
+                    }
                 }
             }
             
             // Gestion du déplacement du doigt
             function handleTouchMove(e) {
-                e.preventDefault();
-                if (plane.isDragging) {
-                    const rect = canvas.getBoundingClientRect();
+                if (plane.isDragging && e.touches.length === 1) {
+                    e.preventDefault();
                     const touch = e.touches[0];
+                    const rect = canvas.getBoundingClientRect();
                     plane.x = touch.clientX - rect.left;
                     plane.y = touch.clientY - rect.top;
                 }
@@ -866,13 +879,11 @@
             
             // Gestion de la fin du toucher
             function handleTouchEnd(e) {
-                e.preventDefault();
-                handleMouseUp(); // Réutiliser la même fonction que pour la souris
+                handleMouseUp();
             }
             
             // Démarrer l'animation
             animate();
         });
     </script>
-</body>
-</html>
+{% endblock %}

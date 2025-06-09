@@ -1,0 +1,49 @@
+/**
+ * Styles pour les éléments liés aux tickets
+ */
+
+/* Badge de ticket avec style perforé */
+.ticket-badge {
+    position: relative;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    font-weight: 500;
+    font-size: 12px;
+}
+
+.ticket-badge::before,
+.ticket-badge::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    background: #f3f4f6;
+    border-radius: 50%;
+}
+
+.ticket-badge::before {
+    left: -5px;
+}
+
+.ticket-badge::after {
+    right: -5px;
+}
+
+/* Bordure perforée pour les éléments ressemblant à des tickets */
+.perforated-border {
+    position: relative;
+}
+
+.perforated-border::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background-image: radial-gradient(circle at 10px 0px, transparent 8px, #fff 8px);
+    background-size: 20px 20px;
+    background-position: 0 0;
+}

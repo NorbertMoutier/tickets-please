@@ -5,54 +5,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PocketPass{% endblock %}</title>
+    
+    <!-- Styles externes -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles internes modulaires -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/animations.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/tickets.css' %}">
     <link rel="stylesheet" href="{% static 'css/ticketsplease_style.css' %}">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    
+    <!-- Favicon et meta -->
     <link rel="icon" type="image/png" href="{% static 'images/tickets_please_favicon.png' %}">
     <meta name="description" content="PocketPass - All your travel tickets in one place.">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        :root {
-            --sunset: #FFB967;
-            --sand: #FFECD1;
-            --ocean: #01324C;
-            --ocean-light: #005D8D;
-        }
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
-    </style>
+    
     {% block extra_head %}{% endblock %}
 </head>
 <body>
     <!-- Header avec navigation -->  
-    <header class="bg-white shadow-md">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="{% url 'home' %}" class="text-[var(--ocean)] font-bold text-xl flex items-center">
-                <i class="fas fa-ticket-alt mr-2 text-[var(--sunset)]"></i>TicketsPlease
-            </a>
-
-            <nav class="flex items-center space-x-4">
-                <a href="#" class="text-gray-700 hover:text-[var(--ocean)] transition-colors">Tickets</a>
-                <a href="#" class="text-gray-700 hover:text-[var(--ocean)] transition-colors">Destinations</a>
-                
+    <header class="fixed w-full z-50 transition-all duration-300 py-4 bg-white bg-opacity-95 backdrop-blur-sm shadow-sm">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="http://127.0.0.1:64207" class="flex items-center">
+                    <img src="{% static 'images/tickets_please_with_text.png' %}" alt="Tickets Please Logo" class="h-10 mr-3">
+                    <span class="text-xl font-bold text-[var(--ocean)]">Tickets Please</span>
+                </a>
+            </div>
+            <div class="hidden md:flex items-center space-x-8">
                 {% if user.is_authenticated %}
+                    <a href="#" class="hover:text-[var(--sunset)] transition">Mes évènements</a>
+                    <a href="#" class="hover:text-[var(--sunset)] transition">Mon offre</a>
+                    
                     <div class="relative" id="accountDropdown">
-                        <button class="flex items-center bg-[var(--ocean)] text-white py-2 px-4 rounded-lg hover:bg-[var(--ocean-light)] transition-colors">
+                        <button class="flex items-center bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition">
                             <i class="fas fa-user-circle mr-2"></i>
-                            <span>{{ user.email|truncatechars:15 }}</span>
+                            <span>Mon compte</span>
                             <i class="fas fa-chevron-down ml-2 text-xs"></i>
                         </button>
                         
                         <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10 hidden" id="accountMenu">
                             <a href="{% url 'account' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors">
-                                <i class="fas fa-id-card mr-2 text-[var(--ocean)]"></i>Mon compte
-                            </a>
-                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors">
-                                <i class="fas fa-ticket-alt mr-2 text-[var(--sunset)]"></i>Mes tickets
+                                <i class="fas fa-id-card mr-2 text-[var(--ocean)]"></i>Mon profil
                             </a>
                             <div class="border-t border-gray-200 my-1"></div>
                             <a href="{% url 'account_logout' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors">
@@ -61,38 +57,73 @@
                         </div>
                     </div>
                 {% else %}
-                    <a href="{% url 'sign_in' %}" class="text-[var(--ocean)] hover:text-[var(--ocean-light)] transition-colors">
-                        <i class="fas fa-sign-in-alt mr-1"></i>Connexion
-                    </a>
-                    <a href="{% url 'account_signup' %}" class="bg-[var(--ocean)] text-white py-2 px-4 rounded-lg hover:bg-[var(--ocean-light)] transition-colors">
-                        Créer un compte
+                    {% if request.path == '/' %}
+                        <a href="#fonctionnalites" class="hover:text-[var(--sunset)] transition">Fonctionnalités</a>
+                        <a href="#pricing" class="hover:text-[var(--sunset)] transition">Pricing</a>
+                        <a href="#qui-sommes-nous" class="hover:text-[var(--sunset)] transition">Qui sommes-nous</a>
+                        <a href="#demo" class="hover:text-[var(--sunset)] transition">Démo</a>
+                    {% endif %}
+                    
+                    <a href="{% url 'sign_in' %}" class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition inline-flex items-center justify-center">
+                        Sign in
                     </a>
                 {% endif %}
-            </nav>
+            </div>
+            <!-- Bouton menu mobile -->
+            <button id="mobile-menu-button" class="md:hidden text-[var(--ocean)]">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+        
+        <!-- Menu mobile -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white w-full absolute left-0 top-full shadow-lg">
+            <div class="container mx-auto px-6 py-4 flex flex-col space-y-4">
+                {% if user.is_authenticated %}
+                    <a href="#" class="hover:text-[var(--sunset)] transition">Mes évènements</a>
+                    <a href="#" class="hover:text-[var(--sunset)] transition">Mon offre</a>
+                    
+                    <a href="{% url 'account' %}" class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition w-full mt-4 inline-flex items-center justify-center">
+                        <i class="fas fa-user-circle mr-2"></i>Mon compte
+                    </a>
+                    <a href="{% url 'account_logout' %}" class="border border-red-500 text-red-500 px-6 py-2 rounded-full hover:bg-red-50 transition w-full mt-2 inline-flex items-center justify-center">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                    </a>
+                {% else %}
+                    {% if request.path == '/' %}
+                        <a href="#fonctionnalites" class="hover:text-[var(--sunset)] transition">Fonctionnalités</a>
+                        <a href="#pricing" class="hover:text-[var(--sunset)] transition">Pricing</a>
+                        <a href="#qui-sommes-nous" class="hover:text-[var(--sunset)] transition">Qui sommes-nous</a>
+                        <a href="#demo" class="hover:text-[var(--sunset)] transition">Démo</a>
+                    {% endif %}
+                    
+                    <a href="{% url 'sign_in' %}" class="bg-[var(--ocean)] text-white px-6 py-2 rounded-full hover:bg-[var(--ocean-light)] transition w-full mt-4 inline-flex items-center justify-center">
+                        Sign in
+                    </a>
+                {% endif %}
+            </div>
         </div>
     </header>
     
     {% block content %}{% endblock %}
     {% block extra_body %}{% endblock %}
     
+    <!-- Canvas et script pour l'animation de l'avion (sauf sur la page de connexion) -->
+    {% if request.path != '/sign-in/' %}
+        <canvas id="planeCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+        <!-- Script d'animation de l'avion avec cache busting -->
+        <script src="{% static 'js/components/plane-animation.js' %}?v={% now 'U' %}" defer></script>
+    {% endif %}
+    
+    <!-- Scripts JS -->
+    <script src="{% static 'js/components/navigation.js' %}"></script>
+    <script src="{% static 'js/components/google-auth.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Scripts spécifiques à la page -->
     <script>
-        // Dropdown menu pour le compte utilisateur
         document.addEventListener('DOMContentLoaded', function() {
-            const accountDropdown = document.getElementById('accountDropdown');
-            const accountMenu = document.getElementById('accountMenu');
-            
-            if (accountDropdown && accountMenu) {
-                accountDropdown.addEventListener('click', function(e) {
-                    accountMenu.classList.toggle('hidden');
-                });
-                
-                // Fermer le menu si on clique ailleurs
-                document.addEventListener('click', function(e) {
-                    if (!accountDropdown.contains(e.target)) {
-                        accountMenu.classList.add('hidden');
-                    }
-                });
-            }
+            // Actions spécifiques au template de base ici
         });
     </script>
 </body>

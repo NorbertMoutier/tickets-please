@@ -36,32 +36,108 @@
         font-family: 'Poppins', sans-serif;
         color: var(--ocean);
     }
+    
+    .success-message {
+        color: #4CAF50;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="loader">
     <div class="spinner"></div>
-    <div class="message">Connexion avec Google en cours...</div>
+    <div class="message">
+        {% if user.is_authenticated %}
+            <span class="success-message">Connexion réussie !</span>
+        {% else %}
+            Connexion avec Google en cours...
+        {% endif %}
+    </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Rediriger vers l'URL d'authentification Google
-        window.location.href = "{% provider_login_url 'google' process='login' %}";
-    });
-
+    // Variable pour suivre si nous avons déjà envoyé un message
+    var messageSent = false;
+    
     // Fonction pour envoyer un message à la fenêtre parente
-    function notifyAuthComplete() {
-        if (window.opener && !window.opener.closed) {
-            window.opener.postMessage('google-auth-complete', '*');
+    function notifyParentWindow(success) {
+        if (window.opener && !window.opener.closed && !messageSent) {
+            console.log("Envoi du message à la fenêtre parente, succès:", success);
+            try {
+                window.opener.postMessage({
+                    type: 'google-auth-complete',
+                    success: success,
+                    redirectUrl: '/account/',
+                    timestamp: new Date().getTime()
+                }, '*');
+                messageSent = true;
+            } catch (e) {
+                console.error("Erreur lors de l'envoi du message:", e);
+            }
+        } else if (messageSent) {
+            console.log("Message déjà envoyé, ignoré");
+        } else {
+            console.warn("Impossible d'envoyer le message: fenêtre parente inaccessible");
         }
     }
-
-    // En cas de réussite, nous serons redirigés ailleurs, mais si nous restons sur cette page
-    // (en cas d'échec), on le notifie à la fenêtre parente
-    window.addEventListener('unload', function() {
-        notifyAuthComplete();
+    
+    // Fonction pour fermer la popup
+    function closePopup() {
+        console.log("Fermeture de la popup programmée");
+        setTimeout(function() {
+            console.log("Tentative de fermeture de la popup");
+            try {
+                window.close();
+                // Fallback si window.close() ne fonctionne pas
+                setTimeout(function() {
+                    if (window.opener) {
+                        console.log("Fallback: demande à la fenêtre parente de nous fermer");
+                        notifyParentWindow(true);
+                    }
+                }, 300);
+            } catch (e) {
+                console.error("Erreur lors de la fermeture de la popup:", e);
+            }
+        }, 1000);
+    }
+    
+    // Fonction principale pour gérer l'authentification
+    function handleAuthentication() {
+        var isAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+        console.log("Gestion de l'authentification, état:", isAuthenticated);
+        
+        if (isAuthenticated) {
+            console.log("Utilisateur authentifié, notification et fermeture");
+            notifyParentWindow(true);
+            closePopup();
+        } else {
+            console.log("Utilisateur non authentifié, redirection vers Google");
+            try {
+                window.location.href = "{% provider_login_url 'google' process='login' %}?popup=1";
+            } catch (e) {
+                console.error("Erreur lors de la redirection:", e);
+                notifyParentWindow(false);
+            }
+        }
+    }
+    
+    // Exécuter au chargement de la page
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("DOM chargé, état authentification:", {{ user.is_authenticated|yesno:"true,false" }});
+        handleAuthentication();
+    });
+    
+    // Intercepter le retour de Google (après authentification)
+    window.addEventListener('pageshow', function(event) {
+        console.log("Événement pageshow, état authentification:", {{ user.is_authenticated|yesno:"true,false" }});
+        handleAuthentication();
+    });
+    
+    // Gestionnaire d'erreurs global
+    window.addEventListener('error', function(event) {
+        console.error("Erreur JavaScript:", event.message);
+        // Essayer de notifier la fenêtre parente en cas d'erreur
+        notifyParentWindow(false);
     });
 </script>
 {% endblock %}

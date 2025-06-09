@@ -1,0 +1,48 @@
+/**
+ * Animations CSS réutilisables pour le site PocketPass
+ */
+
+/* Animation de flottement vertical */
+.float-animation {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+/* Animation de flottement horizontal */
+.float-right-animation {
+    animation: floatRight 8s ease-in-out infinite;
+}
+
+@keyframes floatRight {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-10px); }
+}
+
+/* Animation de rebond */
+.bounce-animation {
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Animation pour le plane simple */
+.plane-animation {
+    animation: floatRight 8s ease-in-out infinite;
+}
+
+/* Animation pour les tickets */
+.ticket-animation {
+    animation: float 5s ease-in-out infinite;
+}
+
+/* Animation de rebond */
+.bounce {
+    animation: bounce 2s ease-in-out infinite;
+}

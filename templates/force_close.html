@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fermeture...</title>
+    <script>
+        // Cette page est conçue pour se fermer immédiatement
+        window.onload = function() {
+            console.log("Page force_close chargée - fermeture immédiate");
+            
+            // Envoyer un message à la page parente pour indiquer une authentification réussie
+            if (window.opener) {
+                try {
+                    console.log("Envoi du message final à la fenêtre parente");
+                    window.opener.postMessage({
+                        type: 'google-auth-complete',
+                        success: true,
+                        redirectUrl: '/account/',
+                        timestamp: new Date().getTime(),
+                        forceClose: true
+                    }, '*');
+                } catch (e) {
+                    console.error("Erreur lors de l'envoi du message:", e);
+                }
+            }
+
+            // Fermer cette fenêtre de plusieurs façons
+            try {
+                // Méthode 1: window.close standard
+                window.close();
+                
+                // Méthode 2: setTimeout pour s'assurer que le message a été envoyé
+                setTimeout(function() {
+                    // Essayer à nouveau
+                    window.close();
+                    
+                    // Méthode 3: Si tout échoue, afficher un message et un bouton
+                    setTimeout(function() {
+                        document.body.innerHTML = '<div style="text-align:center;padding:50px;"><h2>Connexion réussie!</h2><p>Vous pouvez fermer cette fenêtre.</p><button onclick="window.close()" style="padding:10px 20px;background:#4285f4;color:white;border:none;border-radius:5px;cursor:pointer;">Fermer la fenêtre</button></div>';
+                    }, 300);
+                }, 200);
+            } catch(e) {
+                console.error("Erreur lors de la tentative de fermeture:", e);
+            }
+        };
+    </script>
+</head>
+<body style="background-color:#f8f9fa;font-family:Arial,sans-serif;text-align:center;">
+    <h2>Connexion réussie!</h2>
+    <p>Fermeture de la fenêtre en cours...</p>
+</body>
+</html>

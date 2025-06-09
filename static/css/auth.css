@@ -1,0 +1,78 @@
+/* Styles pour les pages d'authentification */
+.auth-container {
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.auth-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.auth-icon {
+    color: #4CAF50;
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    animation: scaleIn 0.5s ease-out;
+}
+
+.auth-message {
+    color: #1a73e8;
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out forwards;
+    animation-delay: 0.2s;
+}
+
+.auth-button {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 1rem;
+}
+
+.auth-button:hover {
+    background: #1557b0;
+    transform: translateY(-2px);
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

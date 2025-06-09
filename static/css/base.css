@@ -1,0 +1,47 @@
+/**
+ * Styles de base et variables pour le site PocketPass
+ */
+
+:root {
+    --sunset: #FFB967;
+    --sand: #FFECD1;
+    --ocean: #01324C;
+    --ocean-light: #005D8D;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f3f4f6;
+    overflow-x: hidden;
+}
+
+/* Arrière-plan en pointillés pour la carte */
+.dotted-map {
+    background-image: radial-gradient(var(--sand) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+}
+
+/* Navigation stylée lorsqu'on défile */
+.nav-scrolled {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    background-color: rgb(255 255 255 / 0.9);
+    backdrop-filter: blur(4px);
+}
+
+/* Effets sur les cartes de fonctionnalités */
+.feature-card:hover .feature-icon {
+    transform: scale(1.1);
+    color: var(--ocean);
+}
+
+/* Transition pour les témoignages */
+.testimonial-slide {
+    transition: transform 0.5s ease;
+}
+
+/* Styles pour les formulaires */
+.input-icon:focus-within {
+    border-color: var(--ocean);
+    box-shadow: 0 0 0 3px rgba(1, 50, 76, 0.2);
+}
